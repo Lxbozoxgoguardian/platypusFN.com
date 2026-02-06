@@ -1,1 +1,198 @@
-hi
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PlatypusFN Hub</title>
+<style>
+* { box-sizing: border-box; font-family: Arial, sans-serif; }
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #0b0f2a, #02040f);
+  color: white;
+  overflow-x: hidden;
+}
+
+/* Floating balls */
+.ball {
+  position: fixed;
+  border-radius: 50%;
+  opacity: 0.25;
+  pointer-events: none;
+  animation: float 20s infinite linear;
+}
+@keyframes float {
+  from { transform: translateY(100vh); }
+  to { transform: translateY(-200vh); }
+}
+
+/* Header */
+header {
+  text-align: center;
+  padding: 60px 20px;
+}
+header h1 {
+  font-size: 3em;
+  letter-spacing: 2px;
+}
+header span {
+  color: #4df3ff;
+}
+
+/* Main panel */
+.panel {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  perspective: 1200px;
+}
+
+/* 3D card */
+.card {
+  background: linear-gradient(145deg, #111, #1c1c3a);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.5);
+  transform-style: preserve-3d;
+  transition: transform .3s;
+}
+.card:hover {
+  transform: rotateX(5deg) rotateY(-5deg);
+}
+
+/* Inputs */
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  margin: 10px 0;
+  font-size: 1em;
+}
+
+/* Link list */
+ul {
+  list-style: none;
+  padding: 0;
+}
+li {
+  background: #222;
+  margin: 6px 0;
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Editor mode */
+.editor {
+  display: none;
+  margin-top: 20px;
+  background: #00000055;
+  padding: 15px;
+  border-radius: 15px;
+}
+footer {
+  text-align: center;
+  padding: 40px;
+  opacity: .6;
+}
+</style>
+</head>
+<body>
+
+<!-- Floating balls -->
+<script>
+for(let i=0;i<15;i++){
+  let b=document.createElement("div");
+  b.className="ball";
+  b.style.width=b.style.height=Math.random()*80+20+"px";
+  b.style.left=Math.random()*100+"%";
+  b.style.background=`hsl(${Math.random()*360},80%,60%)`;
+  b.style.animationDuration=Math.random()*20+10+"s";
+  document.body.appendChild(b);
+}
+</script>
+
+<header>
+<h1>Platypus<span>FN</span></h1>
+<p>YouTube • Platypus FM • Interactive Hub</p>
+</header>
+
+<div class="panel">
+<div class="card">
+
+<select id="category">
+<option>Choose Group</option>
+<option>Main Resources</option>
+<option>Community</option>
+<option>Tools</option>
+</select>
+
+<input type="text" id="search" placeholder="Search or enter edit phrase...">
+
+<ul id="list"></ul>
+
+<div class="editor" id="editor">
+<h3>Editor Mode</h3>
+<input id="newName" placeholder="Link name">
+<input id="newURL" placeholder="Link URL">
+<button onclick="addLink()">Add Link</button>
+</div>
+
+</div>
+</div>
+
+<footer>
+PlatypusFN © 2026 • Built for YouTube
+</footer>
+
+<script>
+let links=[
+{name:"PlatypusFM",url:"https://youtube.com"},
+{name:"Community Page",url:"https://example.com"},
+{name:"Tool Kit",url:"https://example.com"}
+];
+
+let editorMode=false;
+
+function render(){
+let ul=document.getElementById("list");
+ul.innerHTML="";
+links.forEach((l,i)=>{
+let li=document.createElement("li");
+li.innerHTML=`<a href="${l.url}" target="_blank">${l.name}</a>
+${editorMode?`<button onclick="removeLink(${i})">X</button>`:""}`;
+ul.appendChild(li);
+});
+}
+
+function removeLink(i){
+links.splice(i,1);
+render();
+}
+
+function addLink(){
+let n=document.getElementById("newName").value;
+let u=document.getElementById("newURL").value;
+if(n&&u){
+links.push({name:n,url:u});
+render();
+}
+}
+
+document.getElementById("search").addEventListener("keydown",e=>{
+if(e.key==="Enter"){
+let v=e.target.value;
+if(v==="EDITOR-MODE"){   // safe phrase, NOT bypass related
+editorMode=true;
+document.getElementById("editor").style.display="block";
+render();
+}
+}
+});
+
+render();
+</script>
+
+</body>
+</html>
