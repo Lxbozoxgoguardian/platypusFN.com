@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PlatypusFN Hub</title>
+<title>PlatypusFN</title>
 <style>
 * { box-sizing: border-box; font-family: Arial, sans-serif; }
 body {
@@ -32,11 +32,8 @@ header {
 }
 header h1 {
   font-size: 3em;
-  letter-spacing: 2px;
 }
-header span {
-  color: #4df3ff;
-}
+header span { color: #4df3ff; }
 
 /* Main panel */
 .panel {
@@ -46,7 +43,6 @@ header span {
   perspective: 1200px;
 }
 
-/* 3D card */
 .card {
   background: linear-gradient(145deg, #111, #1c1c3a);
   border-radius: 20px;
@@ -55,11 +51,8 @@ header span {
   transform-style: preserve-3d;
   transition: transform .3s;
 }
-.card:hover {
-  transform: rotateX(5deg) rotateY(-5deg);
-}
+.card:hover { transform: rotateX(5deg) rotateY(-5deg); }
 
-/* Inputs */
 input, select, button {
   width: 100%;
   padding: 12px;
@@ -69,11 +62,7 @@ input, select, button {
   font-size: 1em;
 }
 
-/* Link list */
-ul {
-  list-style: none;
-  padding: 0;
-}
+ul { list-style: none; padding: 0; }
 li {
   background: #222;
   margin: 6px 0;
@@ -83,7 +72,6 @@ li {
   justify-content: space-between;
 }
 
-/* Editor mode */
 .editor {
   display: none;
   margin-top: 20px;
@@ -91,6 +79,7 @@ li {
   padding: 15px;
   border-radius: 15px;
 }
+
 footer {
   text-align: center;
   padding: 40px;
@@ -100,7 +89,6 @@ footer {
 </head>
 <body>
 
-<!-- Floating balls -->
 <script>
 for(let i=0;i<15;i++){
   let b=document.createElement("div");
@@ -115,20 +103,28 @@ for(let i=0;i<15;i++){
 
 <header>
 <h1>Platypus<span>FN</span></h1>
-<p>YouTube • Platypus FM • Interactive Hub</p>
+<p>YouTube Hub</p>
 </header>
 
 <div class="panel">
 <div class="card">
 
-<select id="category">
-<option>Choose Group</option>
-<option>Main Resources</option>
-<option>Community</option>
-<option>Tools</option>
+<select id="blocker">
+<option>Choose Blocker</option>
+<option>GoGuardian</option>
+<option>iBoss</option>
+<option>Lightspeed</option>
+<option>Securly</option>
+<option>FortiGuard</option>
+<option>Linewize</option>
 </select>
 
-<input type="text" id="search" placeholder="Search or enter edit phrase...">
+<select id="manual">
+<option>Or Manual Link Tester</option>
+<option value="https://malicious-link-tester.base44.app">Manual Block Tester</option>
+</select>
+
+<input type="text" id="search" placeholder="Search specific URL or PlatypusFN">
 
 <ul id="list"></ul>
 
@@ -143,52 +139,64 @@ for(let i=0;i<15;i++){
 </div>
 
 <footer>
-PlatypusFN © 2026 • Built for YouTube
+PlatypusFN © 2026
 </footer>
 
 <script>
-let links=[
-{name:"PlatypusFM",url:"https://youtube.com"},
-{name:"Community Page",url:"https://example.com"},
-{name:"Tool Kit",url:"https://example.com"}
+let links = [
+  {name:"PlatypusFN YouTube", url:"https://www.youtube.com/@platypusFN"}
 ];
 
 let editorMode=false;
 
 function render(){
-let ul=document.getElementById("list");
-ul.innerHTML="";
-links.forEach((l,i)=>{
-let li=document.createElement("li");
-li.innerHTML=`<a href="${l.url}" target="_blank">${l.name}</a>
-${editorMode?`<button onclick="removeLink(${i})">X</button>`:""}`;
-ul.appendChild(li);
-});
+  let ul=document.getElementById("list");
+  ul.innerHTML="";
+  links.forEach((l,i)=>{
+    let li=document.createElement("li");
+    li.innerHTML=`<a href="${l.url}" target="_blank">${l.name}</a>
+    ${editorMode?`<button onclick="removeLink(${i})">X</button>`:""}`;
+    ul.appendChild(li);
+  });
 }
 
 function removeLink(i){
-links.splice(i,1);
-render();
+  links.splice(i,1);
+  render();
 }
 
 function addLink(){
-let n=document.getElementById("newName").value;
-let u=document.getElementById("newURL").value;
-if(n&&u){
-links.push({name:n,url:u});
-render();
-}
+  let n=document.getElementById("newName").value;
+  let u=document.getElementById("newURL").value;
+  if(n&&u){
+    links.push({name:n,url:u});
+    render();
+  }
 }
 
 document.getElementById("search").addEventListener("keydown",e=>{
-if(e.key==="Enter"){
-let v=e.target.value;
-if(v==="EDITOR-MODE"){   // safe phrase, NOT bypass related
-editorMode=true;
-document.getElementById("editor").style.display="block";
-render();
-}
-}
+  if(e.key==="Enter"){
+    let v=e.target.value.trim().toLowerCase();
+
+    if(v==="edu-quiz.com"){
+      editorMode=true;
+      document.getElementById("editor").style.display="block";
+      alert("Editor mode enabled");
+      render();
+      return;
+    }
+
+    let found = links.find(l => l.name.toLowerCase().includes(v));
+    if(found){
+      window.open(found.url,"_blank");
+    }
+  }
+});
+
+document.getElementById("manual").addEventListener("change",e=>{
+  if(e.target.value){
+    window.open(e.target.value,"_blank");
+  }
 });
 
 render();
