@@ -1,9 +1,7 @@
 // ===== THREE BACKGROUND =====
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById("bg"),
-});
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("bg") });
 renderer.setSize(innerWidth, innerHeight);
 camera.position.z = 30;
 
@@ -24,62 +22,68 @@ function animate() {
 }
 animate();
 
-document.body.onscroll = () => {
-  torus.rotation.y = window.scrollY * 0.001;
+// ===== DEV MODE =====
+let devMode = false;
+const SECRET = "edu-quiz.com cool";
+
+// ===== DATA =====
+let blockers = JSON.parse(localStorage.getItem("blockers")) || {
+  "GoGuardian": "",
+  "iBoss": "",
+  "Lightspeed": "",
+  "FortiGuard": "",
+  "Cisco Umbrella": ""
 };
 
-// ===== DATA (EDITABLE IN DEV MODE) =====
-let services = [
-  { name: "Service Alpha", link: "https://example.com" },
-  { name: "Service Beta", link: "https://example.com" },
-  { name: "Service Gamma", link: "https://example.com" }
-];
-
-// ===== SEARCH =====
+// ===== UI =====
 const input = document.getElementById("searchInput");
 const suggestions = document.getElementById("suggestions");
-const devStatus = document.getElementById("devStatus");
-
-let devMode = false;
-const DEV_PASSWORD = "PLATYPUSMODE"; // secret trigger
+const devBanner = document.getElementById("devBanner");
+const editorOverlay = document.getElementById("editorOverlay");
+const editorBox = document.getElementById("editorBox");
+const editorTitle = document.getElementById("editorTitle");
+const closeEditor = document.getElementById("closeEditor");
 
 input.addEventListener("input", () => {
-  const val = input.value.trim();
+  const val = input.value;
 
-  // Secret dev mode
-  if (val === DEV_PASSWORD) {
+  if (val === SECRET) {
     devMode = true;
-    devStatus.textContent = "DEV MODE ACTIVE";
-    suggestions.innerHTML = "";
+    devBanner.style.display = "block";
+    input.value = "";
     return;
   }
 
   suggestions.innerHTML = "";
   if (!val) return;
 
-  services
-    .filter(s => s.name.toLowerCase().includes(val.toLowerCase()))
-    .forEach(match => {
+  Object.keys(blockers)
+    .filter(b => b.toLowerCase().includes(val.toLowerCase()))
+    .forEach(b => {
       const div = document.createElement("div");
       div.className = "suggestion";
-      div.textContent = match.name;
-      div.onclick = () => window.open(match.link, "_blank");
+      div.textContent = b;
+      div.onclick = () => openEditor(b);
       suggestions.appendChild(div);
     });
 });
 
-// ===== DEV MODE EDITING =====
-document.addEventListener("keydown", e => {
-  if (!devMode) return;
+function openEditor(blocker) {
+  editorTitle.textContent = blocker;
+  editorOverlay.style.display = "flex";
+  editorBox.value = blockers[blocker];
 
-  if (e.key === "a") {
-    const name = prompt("Service name:");
-    const link = prompt("Service link:");
-    if (name && link) services.push({ name, link });
+  if (devMode) {
+    editorBox.removeAttribute("readonly");
+  } else {
+    editorBox.setAttribute("readonly", true);
   }
+}
 
-  if (e.key === "d") {
-    const name = prompt("Delete which service?");
-    services = services.filter(s => s.name !== name);
+closeEditor.onclick = () => {
+  editorOverlay.style.display = "none";
+  if (devMode) {
+    blockers[editorTitle.textContent] = editorBox.value;
+    localStorage.setItem("blockers", JSON.stringify(blockers));
   }
-});
+};
