@@ -1,39 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>ProxyVerse</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<title>ProxyVerse</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <canvas id="bg"></canvas>
 
+<div id="topbar">
+  <span id="logo">ProxyVerse</span>
+  <div id="links">
+    <a href="https://malicious-link-tester.base44.app" target="_blank">Manual Tester</a>
+    <a href="https://www.youtube.com/@platypusFN" target="_blank">platypusFN</a>
+  </div>
+</div>
+
+<div id="devBanner">DEV MODE</div>
+
 <section class="hero">
   <h1>ProxyVerse</h1>
-  <p>Search available services</p>
-
-  <div class="search-box">
-    <input id="searchInput" placeholder="Search services..." />
-    <div id="suggestions"></div>
-  </div>
-
-  <p id="devStatus"></p>
+  <input id="searchInput" placeholder="Search blockers..." />
+  <div id="suggestions"></div>
 </section>
 
-<section class="panel">
-  <h2>Manual Link Tester</h2>
-  <a href="https://malicious-link-tester.base44.app" target="_blank">
-    Open Manual Tester
-  </a>
-</section>
-
-<section class="panel">
-  <h2>YouTube Channel</h2>
-  <a href="https://www.youtube.com/@platypusFN" target="_blank">
-    platypusFN
-  </a>
-</section>
+<div id="editorOverlay">
+  <h2 id="editorTitle"></h2>
+  <textarea id="editorBox"></textarea>
+  <button id="closeEditor">Close</button>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script src="app.js"></script>
