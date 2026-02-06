@@ -18,24 +18,22 @@ body {
   border-radius: 50%;
   opacity: 0.25;
   pointer-events: none;
-  animation: float 20s infinite linear;
+  animation: float 25s infinite linear;
 }
 @keyframes float {
-  from { transform: translateY(100vh); }
+  from { transform: translateY(120vh); }
   to { transform: translateY(-200vh); }
 }
 
 /* Header */
 header {
   text-align: center;
-  padding: 60px 20px;
+  padding: 50px 20px;
 }
-header h1 {
-  font-size: 3em;
-}
-header span { color: #4df3ff; }
+header h1 { font-size: 3em; }
+header p { opacity:.7; }
 
-/* Main panel */
+/* Panel */
 .panel {
   max-width: 900px;
   margin: auto;
@@ -43,16 +41,17 @@ header span { color: #4df3ff; }
   perspective: 1200px;
 }
 
+/* Card */
 .card {
   background: linear-gradient(145deg, #111, #1c1c3a);
   border-radius: 20px;
   padding: 25px;
   box-shadow: 0 20px 40px rgba(0,0,0,.5);
   transform-style: preserve-3d;
-  transition: transform .3s;
+  transition: transform .1s;
 }
-.card:hover { transform: rotateX(5deg) rotateY(-5deg); }
 
+/* Inputs */
 input, select, button {
   width: 100%;
   padding: 12px;
@@ -62,28 +61,22 @@ input, select, button {
   font-size: 1em;
 }
 
+/* List */
 ul { list-style: none; padding: 0; }
 li {
   background: #222;
   margin: 6px 0;
   padding: 10px;
   border-radius: 10px;
-  display: flex;
-  justify-content: space-between;
 }
 
+/* Editor */
 .editor {
   display: none;
   margin-top: 20px;
   background: #00000055;
   padding: 15px;
   border-radius: 15px;
-}
-
-footer {
-  text-align: center;
-  padding: 40px;
-  opacity: .6;
 }
 </style>
 </head>
@@ -102,26 +95,16 @@ for(let i=0;i<15;i++){
 </script>
 
 <header>
-<h1>Platypus<span>FN</span></h1>
-<p>YouTube Hub</p>
+<h1>PlatypusFN</h1>
+<p>Resource Hub</p>
 </header>
 
 <div class="panel">
-<div class="card">
+<div class="card" id="card">
 
-<select id="blocker">
-<option>Choose Blocker</option>
-<option>GoGuardian</option>
-<option>iBoss</option>
-<option>Lightspeed</option>
-<option>Securly</option>
-<option>FortiGuard</option>
-<option>Linewize</option>
-</select>
-
-<select id="manual">
-<option>Or Manual Link Tester</option>
-<option value="https://malicious-link-tester.base44.app">Manual Block Tester</option>
+<select id="categorySelect">
+<option value="">Choose Category</option>
+<option value="manual">Manual Block Tester</option>
 </select>
 
 <input type="text" id="search" placeholder="Search specific URL or PlatypusFN">
@@ -130,76 +113,90 @@ for(let i=0;i<15;i++){
 
 <div class="editor" id="editor">
 <h3>Editor Mode</h3>
-<input id="newName" placeholder="Link name">
-<input id="newURL" placeholder="Link URL">
+<input id="catName" placeholder="Category name">
+<input id="linkName" placeholder="Link name">
+<input id="linkURL" placeholder="Link URL">
 <button onclick="addLink()">Add Link</button>
 </div>
 
 </div>
 </div>
 
-<footer>
-PlatypusFN © 2026
-</footer>
-
 <script>
-let links = [
-  {name:"PlatypusFN YouTube", url:"https://www.youtube.com/@platypusFN"}
-];
-
+let data = JSON.parse(localStorage.getItem("hubData")) || {};
 let editorMode=false;
+let currentCategory="";
+
+const manualTester = "https://malicious-link-tester.base44.app";
+
+function save(){ localStorage.setItem("hubData", JSON.stringify(data)); }
+
+function updateDropdown(){
+  const sel=document.getElementById("categorySelect");
+  sel.innerHTML=`<option value="">Choose Category</option>
+<option value="manual">Manual Block Tester</option>`;
+  for(let c in data){
+    let o=document.createElement("option");
+    o.value=c; o.textContent=c;
+    sel.appendChild(o);
+  }
+}
 
 function render(){
-  let ul=document.getElementById("list");
+  const ul=document.getElementById("list");
   ul.innerHTML="";
-  links.forEach((l,i)=>{
+  if(currentCategory==="manual"){
+    ul.innerHTML=`<li><a href="${manualTester}" target="_blank">Manual Block Tester</a></li>`;
+    return;
+  }
+  if(!data[currentCategory]) return;
+  data[currentCategory].forEach(l=>{
     let li=document.createElement("li");
-    li.innerHTML=`<a href="${l.url}" target="_blank">${l.name}</a>
-    ${editorMode?`<button onclick="removeLink(${i})">X</button>`:""}`;
+    li.innerHTML=`<a href="${l.url}" target="_blank">${l.name}</a>`;
     ul.appendChild(li);
   });
 }
 
-function removeLink(i){
-  links.splice(i,1);
-  render();
+function addLink(){
+  const c=document.getElementById("catName").value;
+  const n=document.getElementById("linkName").value;
+  const u=document.getElementById("linkURL").value;
+  if(!data[c]) data[c]=[];
+  data[c].push({name:n,url:u});
+  save();
+  updateDropdown();
 }
 
-function addLink(){
-  let n=document.getElementById("newName").value;
-  let u=document.getElementById("newURL").value;
-  if(n&&u){
-    links.push({name:n,url:u});
-    render();
-  }
-}
+document.getElementById("categorySelect").addEventListener("change",e=>{
+  currentCategory=e.target.value;
+  e.target.options[0].style.display="none";
+  render();
+});
 
 document.getElementById("search").addEventListener("keydown",e=>{
   if(e.key==="Enter"){
     let v=e.target.value.trim().toLowerCase();
-
     if(v==="edu-quiz.com"){
       editorMode=true;
       document.getElementById("editor").style.display="block";
       alert("Editor mode enabled");
-      render();
-      return;
-    }
-
-    let found = links.find(l => l.name.toLowerCase().includes(v));
-    if(found){
-      window.open(found.url,"_blank");
     }
   }
 });
 
-document.getElementById("manual").addEventListener("change",e=>{
-  if(e.target.value){
-    window.open(e.target.value,"_blank");
-  }
+/* Mouse tilt */
+const card=document.getElementById("card");
+card.addEventListener("mousemove",e=>{
+  const r=card.getBoundingClientRect();
+  const x=(e.clientX-r.left)/r.width-0.5;
+  const y=(e.clientY-r.top)/r.height-0.5;
+  card.style.transform=`rotateX(${y*-15}deg) rotateY(${x*15}deg)`;
+});
+card.addEventListener("mouseleave",()=>{
+  card.style.transform="rotateX(0deg) rotateY(0deg)";
 });
 
-render();
+updateDropdown();
 </script>
 
 </body>
