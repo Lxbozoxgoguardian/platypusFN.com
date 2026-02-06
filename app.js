@@ -26,13 +26,15 @@ animate();
 let devMode = false;
 const SECRET = "edu-quiz.com cool";
 
-// ===== DATA =====
+// ===== BLOCKERS =====
 let blockers = JSON.parse(localStorage.getItem("blockers")) || {
   "GoGuardian": "",
-  "iBoss": "",
   "Lightspeed": "",
+  "iBoss": "",
   "FortiGuard": "",
-  "Cisco Umbrella": ""
+  "Cisco Umbrella": "",
+  "Smoothwall": "",
+  "Securly": ""
 };
 
 // ===== UI =====
@@ -44,21 +46,25 @@ const editorBox = document.getElementById("editorBox");
 const editorTitle = document.getElementById("editorTitle");
 const closeEditor = document.getElementById("closeEditor");
 
-input.addEventListener("input", () => {
-  const val = input.value;
-
-  if (val === SECRET) {
-    devMode = true;
-    devBanner.style.display = "block";
-    input.value = "";
-    return;
+// Trigger dev mode ONLY on ENTER
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    if (input.value === SECRET) {
+      devMode = true;
+      devBanner.style.display = "block";
+      input.value = "";
+      suggestions.innerHTML = "";
+    }
   }
+});
 
+input.addEventListener("input", () => {
+  const val = input.value.toLowerCase();
   suggestions.innerHTML = "";
   if (!val) return;
 
   Object.keys(blockers)
-    .filter(b => b.toLowerCase().includes(val.toLowerCase()))
+    .filter(b => b.toLowerCase().includes(val))
     .forEach(b => {
       const div = document.createElement("div");
       div.className = "suggestion";
@@ -81,9 +87,9 @@ function openEditor(blocker) {
 }
 
 closeEditor.onclick = () => {
-  editorOverlay.style.display = "none";
   if (devMode) {
     blockers[editorTitle.textContent] = editorBox.value;
     localStorage.setItem("blockers", JSON.stringify(blockers));
   }
+  editorOverlay.style.display = "none";
 };
