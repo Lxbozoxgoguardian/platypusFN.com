@@ -22,9 +22,17 @@ function animate() {
 }
 animate();
 
-// ===== DEV MODE =====
+// ===== ADMIN CREDENTIALS (SET YOUR OWN) =====
+const ADMIN = {
+  username: "YOUR_USERNAME",
+  first: "YOUR_FIRST_NAME",
+  last: "YOUR_LAST_NAME",
+  password: "YOUR_PASSWORD",
+  github: "YOUR_GITHUB",
+  discord: "YOUR_DISCORD"
+};
+
 let devMode = false;
-const SECRET = "edu-quiz.com cool";
 
 // ===== BLOCKERS =====
 let blockers = JSON.parse(localStorage.getItem("blockers")) || {
@@ -46,29 +54,14 @@ const editorBox = document.getElementById("editorBox");
 const editorTitle = document.getElementById("editorTitle");
 const closeEditor = document.getElementById("closeEditor");
 
-// ===== HELPERS =====
-function normalizeInput(str) {
-  return str.trim().toLowerCase();
-}
+const loginOverlay = document.getElementById("loginOverlay");
+const loginBtn = document.getElementById("loginBtn");
+const cancelLogin = document.getElementById("cancelLogin");
 
-// ===== DEV MODE TRIGGER =====
-input.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    if (normalizeInput(input.value) === SECRET) {
-      devMode = true;
-      devBanner.style.display = "block";
-      input.value = "";
-      input.blur();
-      suggestions.innerHTML = "";
-    }
-  }
-});
-
-// ===== SEARCH + SUGGESTIONS =====
+// ===== SEARCH =====
 input.addEventListener("input", () => {
-  const val = normalizeInput(input.value);
+  const val = input.value.toLowerCase();
   suggestions.innerHTML = "";
-
   if (!val) return;
 
   Object.keys(blockers)
@@ -82,7 +75,47 @@ input.addEventListener("input", () => {
     });
 });
 
-// ===== OPEN EDITOR =====
+// ===== ADMIN COMMAND =====
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    if (input.value.trim() === "/admin enable") {
+      loginOverlay.style.display = "flex";
+      input.value = "";
+      suggestions.innerHTML = "";
+    }
+  }
+});
+
+// ===== LOGIN =====
+loginBtn.onclick = () => {
+  const u = document.getElementById("loginUser").value;
+  const f = document.getElementById("loginFirst").value;
+  const l = document.getElementById("loginLast").value;
+  const p = document.getElementById("loginPass").value;
+  const g = document.getElementById("loginGit").value;
+  const d = document.getElementById("loginDisc").value;
+
+  if (
+    u === ADMIN.username &&
+    f === ADMIN.first &&
+    l === ADMIN.last &&
+    p === ADMIN.password &&
+    g === ADMIN.github &&
+    d === ADMIN.discord
+  ) {
+    devMode = true;
+    devBanner.style.display = "block";
+    loginOverlay.style.display = "none";
+  } else {
+    alert("Invalid admin credentials");
+  }
+};
+
+cancelLogin.onclick = () => {
+  loginOverlay.style.display = "none";
+};
+
+// ===== EDITOR =====
 function openEditor(blocker) {
   editorTitle.textContent = blocker;
   editorOverlay.style.display = "flex";
@@ -96,7 +129,6 @@ function openEditor(blocker) {
   }
 }
 
-// ===== SAVE + CLOSE =====
 function saveEditor() {
   if (devMode) {
     const blocker = editorTitle.textContent;
@@ -110,7 +142,4 @@ closeEditor.onclick = () => {
   editorOverlay.style.display = "none";
 };
 
-// ===== AUTOSAVE WHILE TYPING (DEV MODE) =====
-editorBox.addEventListener("input", () => {
-  saveEditor();
-});
+editorBox.addEventListener("input", saveEditor);
