@@ -46,21 +46,29 @@ const editorBox = document.getElementById("editorBox");
 const editorTitle = document.getElementById("editorTitle");
 const closeEditor = document.getElementById("closeEditor");
 
-// Trigger dev mode ONLY on ENTER
+// ===== HELPERS =====
+function normalizeInput(str) {
+  return str.trim().toLowerCase();
+}
+
+// ===== DEV MODE TRIGGER =====
 input.addEventListener("keydown", e => {
   if (e.key === "Enter") {
-    if (input.value === SECRET) {
+    if (normalizeInput(input.value) === SECRET) {
       devMode = true;
       devBanner.style.display = "block";
       input.value = "";
+      input.blur();
       suggestions.innerHTML = "";
     }
   }
 });
 
+// ===== SEARCH + SUGGESTIONS =====
 input.addEventListener("input", () => {
-  const val = input.value.toLowerCase();
+  const val = normalizeInput(input.value);
   suggestions.innerHTML = "";
+
   if (!val) return;
 
   Object.keys(blockers)
@@ -74,22 +82,35 @@ input.addEventListener("input", () => {
     });
 });
 
+// ===== OPEN EDITOR =====
 function openEditor(blocker) {
   editorTitle.textContent = blocker;
   editorOverlay.style.display = "flex";
-  editorBox.value = blockers[blocker];
+  editorBox.value = blockers[blocker] || "";
 
   if (devMode) {
     editorBox.removeAttribute("readonly");
+    editorBox.focus();
   } else {
     editorBox.setAttribute("readonly", true);
   }
 }
 
-closeEditor.onclick = () => {
+// ===== SAVE + CLOSE =====
+function saveEditor() {
   if (devMode) {
-    blockers[editorTitle.textContent] = editorBox.value;
+    const blocker = editorTitle.textContent;
+    blockers[blocker] = editorBox.value;
     localStorage.setItem("blockers", JSON.stringify(blockers));
   }
+}
+
+closeEditor.onclick = () => {
+  saveEditor();
   editorOverlay.style.display = "none";
 };
+
+// ===== AUTOSAVE WHILE TYPING (DEV MODE) =====
+editorBox.addEventListener("input", () => {
+  saveEditor();
+});
