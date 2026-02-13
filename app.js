@@ -24,12 +24,12 @@ animate();
 
 // ===== ADMIN CREDENTIALS (SET YOUR OWN) =====
 const ADMIN = {
-  username: "YOUR_USERNAME",
-  first: "YOUR_FIRST_NAME",
-  last: "YOUR_LAST_NAME",
-  password: "YOUR_PASSWORD",
-  github: "YOUR_GITHUB",
-  discord: "YOUR_DISCORD"
+  username: "dihman67",
+  first: "hehe",
+  last: "ohmagod",
+  password: "696796poop",
+  github: "bozoman",
+  discord: "notabot"
 };
 
 let devMode = false;
