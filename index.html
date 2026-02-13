@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>ProxyVerse</title>
 <link rel="stylesheet" href="style.css">
-  <favicon href="https://cdn3d.iconscout.com/3d/premium/thumb/tor-3d-icon-png-download-5728336.png" />
+<favicon href="https://cdn3d.iconscout.com/3d/premium/thumb/tor-3d-icon-png-download-5728336.png" />
 </head>
 <body>
 
@@ -26,10 +26,23 @@
   <div id="suggestions"></div>
 </section>
 
+<!-- EDITOR OVERLAY -->
 <div id="editorOverlay">
   <h2 id="editorTitle"></h2>
   <textarea id="editorBox"></textarea>
   <button id="closeEditor">Close</button>
+</div>
+
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay">
+  <input id="loginUser" placeholder="Username">
+  <input id="loginFirst" placeholder="First Name">
+  <input id="loginLast" placeholder="Last Name">
+  <input id="loginPass" type="password" placeholder="Password">
+  <input id="loginGit" placeholder="GitHub">
+  <input id="loginDisc" placeholder="Discord">
+  <button id="loginBtn">Login</button>
+  <button id="cancelLogin">Cancel</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
